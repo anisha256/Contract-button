@@ -5,7 +5,7 @@ const { API_URL, MNEMONIC } = process.env;
 module.exports = {
   plugins: ['truffle-plugin-verify'],
   api_keys: {
-    etherscan: '',
+    etherscan: '2PEHJ498MVXG6B8Z8GVX8MW8CGCIS6H7GI',
   },
   networks: {
     development: {
@@ -13,13 +13,27 @@ module.exports = {
       port: 8545, // Standard Ethereum port (default: none)
       network_id: '*', // Any network (default: none)
     },
-    ropsten: {
+    rinkeby: {
       provider: function () {
         return new HDWalletProvider(MNEMONIC, API_URL);
       },
-      network_id: 3, // Ropsten's id
-      gas: 5500000, // Ropsten has a lower block limit migrations? (default: false for public nets )
+      network_id: 4,
+      gas: 5500000,
     },
+    // goerli: {
+    //   provider: function () {
+    //     return new HDWalletProvider(MNEMONIC, API_URL);
+    //   },
+    //   network_id: 5,
+    //   gas: 5500000,
+    // },
+    // ropsten: {
+    //   provider: function () {
+    //     return new HDWalletProvider(MNEMONIC, API_URL);
+    //   },
+    //   network_id: 3, // Ropsten's id
+    //   gas: 5500000, // Ropsten has a lower block limit migrations? (default: false for public nets )
+    // },
     // Another network with more advanced options...
     // advanced: {
     // port: 8777,             // Custom port
