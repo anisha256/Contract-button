@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract EscrowChannel {
     using ECDSA for bytes32;
+    using SafeMath for uint256;
     /* **************
         ENUMS AND CONSTANTS
     ***************/
@@ -55,7 +56,7 @@ contract EscrowChannel {
     modifier isOpen(bytes32 id) {
         require(
             channels[id].channelState == ChannelState.IS_OPEN,
-            "The channel is not open"
+            "The c is not open"
         );
         _;
     }
@@ -66,7 +67,7 @@ contract EscrowChannel {
     modifier notClosed(bytes32 id) {
         require(
             channels[id].channelState != ChannelState.IS_CLOSED,
-            "The channel should not be closed"
+            "The c should not be closed"
         );
         _;
     }
@@ -74,7 +75,21 @@ contract EscrowChannel {
         require(
             msg.sender == channels[id].buyerAddress ||
                 msg.sender == channels[id].sellerAddress,
-            "You are not participant in the channel"
+            "You are not participant in the c"
+        );
+        _;
+    }
+    modifier isDuringChallengePeriod(bytes32 id) {
+        Channel memory c = channels[id];
+        bool timeOver = block.timestamp >
+            ((c.closingTime).add(c.challengeTimePeriod));
+        require(!timeOver, "Challenge Time is Over");
+        _;
+    }
+    modifier isOnChallenge(bytes32 id) {
+        require(
+            channels[id].channelState == ChannelState.CHALLENGE,
+            "Channel is not challenged"
         );
         _;
     }
@@ -88,7 +103,7 @@ contract EscrowChannel {
     ***************/
 
     /**
-     * Open a channel.
+     * Open a c.
      *
      *@param sellerAddress Address of the seller
      *@param amount amount of toke to be deposited to the seller
@@ -116,90 +131,37 @@ contract EscrowChannel {
                 block.number
             )
         );
-        Channel memory channel = Channel(
+        Channel memory c = Channel(
             channelId,
             tokenAddress,
             buyerAddress,
             sellerAddress,
-            amount, //buyer balance
-            0, //seller balance
-            0, //nonce
-            0, //closing time
+            amount,
+            0,
+            0,
+            0,
             challengeTimePeriod,
             ChannelState.IS_OPEN
         );
-        receiveTokens(channel.tokenAddress, buyerAddress, amount);
-        channels[channelId] = channel;
+        transferTokensToContract(c.tokenAddress, buyerAddress, amount);
+        channels[channelId] = c;
         emit ChannelOpened(channelId);
     }
 
+    // seller joins the channel
     function joinChannel(bytes32 channelId, uint256 amount)
         public
         channelExists(channelId)
         isOpen(channelId)
     {
         address sellerAddress = msg.sender;
-        Channel storage channel = channels[channelId];
-        require(
-            channel.sellerAddress == sellerAddress,
-            "The channel creator did'nt specify you as seller."
-        );
-
-        require(
-            channel.sellerBalance == 0,
-            "You cannot join to the channel twice."
-        );
-
+        Channel storage c = channels[channelId];
+        require(c.sellerAddress == sellerAddress, "Not a seller.");
+        require(c.sellerBalance == 0, "Channel already joined");
         require(amount >= 0, "Incorrect amount.");
-        receiveTokens(channel.tokenAddress, sellerAddress, amount);
-        channel.sellerBalance = amount;
+        transferTokensToContract(c.tokenAddress, sellerAddress, amount);
+        c.sellerBalance = amount;
         emit SellerJoined(channelId);
-    }
-
-    function closeChannel(
-        bytes32 channelId,
-        uint256 nonce,
-        uint256 buyerBalance,
-        uint256 sellerBalance,
-        bytes memory buyerSign,
-        bytes memory sellerSign
-    )
-        public
-        channelExists(channelId)
-        isOpen(channelId)
-        participantsOnly(channelId)
-    {
-        verifySignature(
-            channelId,
-            nonce,
-            buyerBalance,
-            sellerBalance,
-            buyerSign,
-            sellerSign
-        );
-        updateChannel(channelId, nonce, buyerBalance, sellerBalance);
-        Channel memory channel = channels[channelId];
-        bool channelNotInChallenge = channel.challengeTimePeriod == 0;
-        if (channelNotInChallenge) {
-            distributeTokens(channelId);
-        } else {
-            emit ChannelOnChallenge(channelId);
-        }
-    }
-
-    modifier isDuringChallengePeriod(bytes32 id) {
-        Channel memory channel = channels[id];
-        bool timeOver = block.timestamp >
-            channel.closingTime + (channel.challengeTimePeriod);
-        require(!timeOver, "Time is Over");
-        _;
-    }
-    modifier isOnChallenge(bytes32 id) {
-        require(
-            channels[id].channelState == ChannelState.CHALLENGE,
-            "Channel is not active"
-        );
-        _;
     }
 
     function challenge(
@@ -216,11 +178,8 @@ contract EscrowChannel {
         isOnChallenge(channelId)
         isDuringChallengePeriod(channelId)
     {
-        Channel memory channel = channels[channelId];
-        require(
-            nonce > channel.nonce,
-            "The nonce must be greater than previous"
-        );
+        Channel memory c = channels[channelId];
+        require(nonce > c.nonce, "The nonce must be greater than latest");
         //signature verify
         verifySignature(
             channelId,
@@ -235,11 +194,43 @@ contract EscrowChannel {
         emit ChannelIsChallenged(channelId);
     }
 
+    function closeChannel(
+        bytes32 channelId,
+        uint256 nonce,
+        uint256 buyerBalance,
+        uint256 sellerBalance,
+        bytes memory buyerSign,
+        bytes memory sellerSign
+    )
+        public
+        channelExists(channelId)
+        isOpen(channelId)
+        participantsOnly(channelId)
+    {
+        //must be closed by the one who opened the c
+        verifySignature(
+            channelId,
+            nonce,
+            buyerBalance,
+            sellerBalance,
+            buyerSign,
+            sellerSign
+        );
+        updateChannel(channelId, nonce, buyerBalance, sellerBalance);
+        Channel memory c = channels[channelId];
+        bool channelNotInChallenge = c.challengeTimePeriod == 0;
+        if (channelNotInChallenge) {
+            releaseTokens(channelId);
+        } else {
+            emit ChannelOnChallenge(channelId);
+        }
+    }
+
     /* **************
         INTERNAL FUNCTIONS
     ***************/
 
-    function receiveTokens(
+    function transferTokensToContract(
         address tokenAddress,
         address from,
         uint256 amount
@@ -258,28 +249,28 @@ contract EscrowChannel {
         bytes memory buyerSign,
         bytes memory sellerSign
     ) internal view {
-        Channel memory channel = channels[channelId];
+        Channel memory c = channels[channelId];
         bytes32 messageHash = keccak256(
             abi.encodePacked(channelId, buyerBalance, sellerBalance, nonce)
         );
 
         require(
-            verifyHash(messageHash, buyerSign, channel.buyerAddress),
+            verifyHash(messageHash, buyerSign, c.buyerAddress),
             "Buyer signature is invalid"
         );
         require(
-            verifyHash(messageHash, sellerSign, channel.sellerAddress),
+            verifyHash(messageHash, sellerSign, c.sellerAddress),
             "Seller signature is invalid"
         );
     }
 
     //verifies if the provided hash was signed by the signer
     function verifyHash(
-        bytes32 hash,
+        bytes32 messageHash,
         bytes memory signature,
         address signer
     ) internal pure returns (bool) {
-        bytes32 ethSignedMessageHash = hash.toEthSignedMessageHash();
+        bytes32 ethSignedMessageHash = messageHash.toEthSignedMessageHash();
         return ethSignedMessageHash.recover(signature) == signer;
     }
 
@@ -289,34 +280,26 @@ contract EscrowChannel {
         uint256 buyerBalance,
         uint256 sellerBalance
     ) internal {
-        //find the channel with channel id
-        Channel storage channel = channels[channelId];
+        //find the channel  with channel id
+        Channel storage c = channels[channelId];
         require(
             (buyerBalance + sellerBalance) ==
-                (channel.buyerBalance + channel.sellerBalance),
+                (c.buyerBalance + c.sellerBalance),
             "total balance doesnot tally"
         );
-        channel.nonce = nonce;
-        channel.buyerBalance = buyerBalance;
-        channel.sellerBalance = sellerBalance;
-        if (channel.closingTime == 0) channel.closingTime = block.timestamp;
-        channel.channelState = ChannelState.CHALLENGE;
+        c.nonce = nonce;
+        c.buyerBalance = buyerBalance;
+        c.sellerBalance = sellerBalance;
+        if (c.closingTime == 0) c.closingTime = block.timestamp;
+        c.channelState = ChannelState.CHALLENGE;
     }
 
-    function distributeTokens(bytes32 channelId) internal notClosed(channelId) {
-        Channel storage channel = channels[channelId];
-        //channel close
-        channel.channelState = ChannelState.IS_CLOSED;
-        transferTokens(
-            channel.tokenAddress,
-            channel.buyerAddress,
-            channel.buyerBalance
-        );
-        transferTokens(
-            channel.tokenAddress,
-            channel.sellerAddress,
-            channel.sellerBalance
-        );
+    function releaseTokens(bytes32 channelId) internal notClosed(channelId) {
+        Channel storage c = channels[channelId];
+        //c close
+        c.channelState = ChannelState.IS_CLOSED;
+        transferTokens(c.tokenAddress, c.buyerAddress, c.buyerBalance);
+        transferTokens(c.tokenAddress, c.sellerAddress, c.sellerBalance);
         emit ChannelClosed(channelId);
     }
 

@@ -12,21 +12,25 @@ contract VerifySig {
     function verify(
         address _signer,
         string memory _message,
+        uint _nonce,
+        uint256 _amount,
         bytes memory _signature
     ) external pure returns (bool) {
         //hash the message
-        bytes32 messageHash = getMessageHash(_message);
+        bytes32 messageHash = getMessageHash(_message, _nonce, _amount);
+        //signature is generated for messageHash 
+        //generate ethSigned msg 
         bytes32 ethSignedMessageHash = getEthSignedMessageHash(messageHash);
 
         return recover(ethSignedMessageHash, _signature) == _signer;
     }
 
-    function getMessageHash(string memory _message)
+    function getMessageHash(string memory _message, uint _nonce , uint256 _amount )
         public
         pure
         returns (bytes32)
     {
-        return keccak256(abi.encodePacked(_message));
+        return keccak256(abi.encodePacked(_message, _nonce, _amount));
     }
 
     function getEthSignedMessageHash(bytes32 _messageHash)
