@@ -54,7 +54,20 @@
 			},
 			{
 				"inputs": [],
-				"name": "endAt",
+				"name": "countdownEnd",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "countdownStart",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -68,6 +81,19 @@
 			{
 				"inputs": [],
 				"name": "getCountdown",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "newCountdownEnd",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -130,6 +156,11 @@
 						"type": "uint256"
 					},
 					{
+						"internalType": "uint256",
+						"name": "joinAt",
+						"type": "uint256"
+					},
+					{
 						"internalType": "bool",
 						"name": "choice",
 						"type": "bool"
@@ -145,12 +176,12 @@
 			},
 			{
 				"inputs": [],
-				"name": "startAt",
+				"name": "reset",
 				"outputs": [
 					{
-						"internalType": "uint256",
+						"internalType": "bool",
 						"name": "",
-						"type": "uint256"
+						"type": "bool"
 					}
 				],
 				"stateMutability": "view",
@@ -345,11 +376,11 @@
 			]
 		},
 		"contracts/CountdownButton.sol": {
-			"keccak256": "0x8e9a887c14472dcd390173a50c1a9b1b86087115b5bba5aa61d2da52a36bf6e5",
+			"keccak256": "0x5e21101b25e3ee4c1d344ca9f9e73cbaad1d7e90555126f510e3a047243dc526",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://0a13a65df7abde23b9172541c57aaf4f72c8f1ec9304f1701223bf832984754f",
-				"dweb:/ipfs/QmY6fNzJv2JwRtkKAc5NUTxBp9HdmfReoyvFHajm6z4E4W"
+				"bzz-raw://d844b308b059526fe5bd1205b5e2c8bf226a6c02d3d94b263eb07f734b371c4e",
+				"dweb:/ipfs/Qma2yw2UFihJKbsoxPrGQg6bcmHxN5nzUPbiG5QGo9waWX"
 			]
 		},
 		"contracts/TestToken.sol": {
