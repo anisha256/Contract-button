@@ -90,7 +90,9 @@ contract CountdownButton {
             token.transferFrom(msg.sender, address(this), 20000000000000000000);
 
             reset = true;
-            newCountdownEnd = p.joinAt.add(countdownEnd.sub(p.joinAt));
+            //-10 min
+            newCountdownEnd = p.joinAt.add(countdownEnd.sub(p.joinAt).sub(600));
+
             emit Create(count);
         }
         // state = State.COUNTDOWN;
