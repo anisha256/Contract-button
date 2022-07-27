@@ -16,6 +16,11 @@
 						"internalType": "uint256",
 						"name": "_unluckPeriod",
 						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_startAt",
+						"type": "uint256"
 					}
 				],
 				"stateMutability": "nonpayable",
@@ -27,7 +32,7 @@
 					{
 						"indexed": false,
 						"internalType": "uint256",
-						"name": "count",
+						"name": "pcount",
 						"type": "uint256"
 					}
 				],
@@ -37,6 +42,32 @@
 			{
 				"inputs": [],
 				"name": "count",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "endAt",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getCountdown",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -76,13 +107,18 @@
 			{
 				"inputs": [
 					{
-						"internalType": "address",
+						"internalType": "uint256",
 						"name": "",
-						"type": "address"
+						"type": "uint256"
 					}
 				],
 				"name": "participants",
 				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "pId",
+						"type": "uint256"
+					},
 					{
 						"internalType": "address",
 						"name": "pAddress",
@@ -102,6 +138,19 @@
 						"internalType": "bool",
 						"name": "isLeader",
 						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "startAt",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
 					}
 				],
 				"stateMutability": "view",
@@ -178,13 +227,6 @@
 				],
 				"stateMutability": "view",
 				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "withdrawPrize",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
 			}
 		],
 		"devdoc": {
@@ -200,7 +242,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"contracts/Button.sol": "CountdownButton"
+			"contracts/CountdownButton.sol": "CountdownButton"
 		},
 		"evmVersion": "berlin",
 		"libraries": {},
@@ -302,12 +344,12 @@
 				"dweb:/ipfs/QmQJquTMtc6fgm5JQzGdsGpA2fqBe3MHWEdt2qzaLySMdN"
 			]
 		},
-		"contracts/Button.sol": {
-			"keccak256": "0xac23f2ac8c81b25b1080531cea36309d18908c855771c5acf4ed70f4fc09819b",
+		"contracts/CountdownButton.sol": {
+			"keccak256": "0x8e9a887c14472dcd390173a50c1a9b1b86087115b5bba5aa61d2da52a36bf6e5",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://835c37c9943ab45c4cc56139cf63e094c958890904ae50a85a8356f01a4ce6ec",
-				"dweb:/ipfs/QmNfE6t67sbCnJAncKGU5ZGog7xS3zAwgcoMUFet1wBVBv"
+				"bzz-raw://0a13a65df7abde23b9172541c57aaf4f72c8f1ec9304f1701223bf832984754f",
+				"dweb:/ipfs/QmY6fNzJv2JwRtkKAc5NUTxBp9HdmfReoyvFHajm6z4E4W"
 			]
 		},
 		"contracts/TestToken.sol": {

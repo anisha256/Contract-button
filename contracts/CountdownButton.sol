@@ -17,9 +17,10 @@ contract CountdownButton {
     State public state;
 
     struct Participant {
+        uint256 pId;
         address pAddress;
         uint256 balance;
-        uint256 joinAt;
+        // uint256 joinAt;
         bool choice;
         bool isLeader;
     }
@@ -29,68 +30,99 @@ contract CountdownButton {
     address public participantAddress;
     address public winnerAddress;
     uint256 public count;
+
     uint256 public unlockPeriod;
+    uint256 public startAt;
+    uint256 public endAt;
+
     uint256 public totalPrize;
 
     //mapping
-    mapping(address => Participant) public participants;
+    mapping(uint256 => Participant) public participants;
+    // mapping(address => Participant) public participants;
+
+    
 
     //modifiers
-    modifier onlyLeader() {
-        Participant memory p;
-        require(p.isLeader == true, "NOT A LEADER");
-        _;
-    }
+  
     modifier inState(State _state) {
         require(state == _state);
         _;
     }
 
     //events
-    event Create(uint256 count);
+    event Create(uint256 pcount);
 
     //functions
-    constructor(TestToken _token, uint256 _unluckPeriod) {
+    constructor(TestToken _token, uint256 _unluckPeriod, uint256 _startAt) {
         token = _token;
         unlockPeriod = _unluckPeriod;
+        startAt = _startAt;
+        endAt = unlockPeriod.add(startAt);
         state = State.START;
     }
 
-    function onClick(bool _choice, uint256 _joinAt)
+    function onClick(bool _choice)
         public
         inState(State.START)
     {
+
         participantAddress = msg.sender;
         require(
-            block.timestamp < _joinAt.add(unlockPeriod),
+            block.timestamp < endAt,
             "CANNOT PARTICIPATE"
         );
+            count += 1;
 
         if (_choice) {
-            participants[participantAddress] = Participant({
-                pAddress: participantAddress,
-                balance: token.balanceOf(participantAddress),
-                joinAt: _joinAt,
+
+            participants[count] = Participant({
+                pId:count,
+                pAddress: msg.sender,
+                balance: token.balanceOf(msg.sender),
+                // joinAt: _joinAt,
                 choice: _choice,
                 isLeader: true
             });
-            count += 1;
+
             token.transferFrom(
-                participantAddress,
+                msg.sender,
                 address(this),
                 20000000000000000000
             );
+            
+        emit Create(count);
         }
+            // state = State.COUNTDOWN;
+
+    }
+    function getCountdown() 
+    public 
+    view
+    /** inState(State.COUNTDOWN) */
+    returns(uint256){
+        require(block.timestamp <= endAt,"Countdown is over");
+        // state = State.COUNTDOWN_EXPIRED;
+        return endAt.sub(block.timestamp);
     }
 
-    function winner() public onlyLeader inState(State.COUNTDOWN_EXPIRED) {
-        require(block.timestamp >= unlockPeriod, " REWARDS ARENOT UNLOCKED");
+    function winner() public 
+    /**inState(State.COUNTDOWN_EXPIRED)  */ 
+    {
+        require(
+            block.timestamp >= endAt,
+            " REWARDS IS LOCKED"
+        );
         //declare winner
-
-        //withdraw the price
+        Participant memory p = participants[count];
+        if(p.isLeader){
+        winnerAddress = p.pAddress;
+            //withdraw the price
         totalPrize = token.balanceOf(address(this));
         token.transfer(winnerAddress, totalPrize);
+        }
+     
     }
 
-    function withdrawPrize() public {}
+   
 }
