@@ -6,17 +6,6 @@
 	"output": {
 		"abi": [
 			{
-				"inputs": [
-					{
-						"internalType": "contract TestToken",
-						"name": "_token",
-						"type": "address"
-					}
-				],
-				"stateMutability": "nonpayable",
-				"type": "constructor"
-			},
-			{
 				"anonymous": false,
 				"inputs": [
 					{
@@ -136,6 +125,11 @@
 					},
 					{
 						"internalType": "address",
+						"name": "tokenAddress",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
 						"name": "buyerAddress",
 						"type": "address"
 					},
@@ -238,6 +232,11 @@
 				"inputs": [
 					{
 						"internalType": "address",
+						"name": "tokenAddress",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
 						"name": "sellerAddress",
 						"type": "address"
 					},
@@ -256,25 +255,12 @@
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "token",
-				"outputs": [
-					{
-						"internalType": "contract TestToken",
-						"name": "",
-						"type": "address"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
 			}
 		],
 		"devdoc": {
 			"kind": "dev",
 			"methods": {
-				"openChannel(address,uint256,uint256)": {
+				"openChannel(address,address,uint256,uint256)": {
 					"params": {
 						"amount": "amount of toke to be deposited to the seller",
 						"challengeTimePeriod": "challenge period",
@@ -287,8 +273,8 @@
 		"userdoc": {
 			"kind": "user",
 			"methods": {
-				"openChannel(address,uint256,uint256)": {
-					"notice": "Open a channel."
+				"openChannel(address,address,uint256,uint256)": {
+					"notice": "Open a c."
 				}
 			},
 			"version": 1
@@ -310,22 +296,6 @@
 		"remappings": []
 	},
 	"sources": {
-		"@openzeppelin/contracts/access/AccessControl.sol": {
-			"keccak256": "0x5b35d8e68aeaccc685239bd9dd79b9ba01a0357930f8a3307ab85511733d9724",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://ba8eb2d22f9321bd4660f6617c181d9611ff30a9b089408b8c6e2216d6d5cdc5",
-				"dweb:/ipfs/QmTSJvhjHfnUV1j4hsqDv8PmLvGBLRs9gHLjTUXrUJ5Y9q"
-			]
-		},
-		"@openzeppelin/contracts/access/IAccessControl.sol": {
-			"keccak256": "0x59ce320a585d7e1f163cd70390a0ef2ff9cec832e2aa544293a00692465a7a57",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://bb2c137c343ef0c4c7ce7b18c1d108afdc9d315a04e48307288d2d05adcbde3a",
-				"dweb:/ipfs/QmUxhrAQM3MM3FF5j7AtcXLXguWCJBHJ14BRdVtuoQc8Fh"
-			]
-		},
 		"@openzeppelin/contracts/token/ERC20/ERC20.sol": {
 			"keccak256": "0x24b04b8aacaaf1a4a0719117b29c9c3647b1f479c5ac2a60f5ff1bb6d839c238",
 			"license": "MIT",
@@ -340,14 +310,6 @@
 			"urls": [
 				"bzz-raw://5a7d5b1ef5d8d5889ad2ed89d8619c09383b80b72ab226e0fe7bde1636481e34",
 				"dweb:/ipfs/QmebXWgtEfumQGBdVeM6c71McLixYXQP5Bk6kKXuoY4Bmr"
-			]
-		},
-		"@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol": {
-			"keccak256": "0x0d19410453cda55960a818e02bd7c18952a5c8fe7a3036e81f0d599f34487a7b",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://4c0f62d3d5bef22b5ca00cc3903e7de6152cb68d2d22401a463f373cda54c00f",
-				"dweb:/ipfs/QmSfzjZux7LC7NW2f7rjCXTHeFMUCWERqDkhpCTBy7kxTe"
 			]
 		},
 		"@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol": {
@@ -382,22 +344,6 @@
 				"dweb:/ipfs/QmQAootkVfoe4PLaYbT4Xob2dJRm3bZfbCffEHRbCYXNPF"
 			]
 		},
-		"@openzeppelin/contracts/utils/introspection/ERC165.sol": {
-			"keccak256": "0xd10975de010d89fd1c78dc5e8a9a7e7f496198085c151648f20cba166b32582b",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://fb0048dee081f6fffa5f74afc3fb328483c2a30504e94a0ddd2a5114d731ec4d",
-				"dweb:/ipfs/QmZptt1nmYoA5SgjwnSgWqgUSDgm4q52Yos3xhnMv3MV43"
-			]
-		},
-		"@openzeppelin/contracts/utils/introspection/IERC165.sol": {
-			"keccak256": "0x447a5f3ddc18419d41ff92b3773fb86471b1db25773e07f877f548918a185bf1",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://be161e54f24e5c6fae81a12db1a8ae87bc5ae1b0ddc805d82a1440a68455088f",
-				"dweb:/ipfs/QmP7C3CHdY9urF4dEMb9wmsp1wMxHF6nhA2yQE5SKiPAdy"
-			]
-		},
 		"@openzeppelin/contracts/utils/math/SafeMath.sol": {
 			"keccak256": "0x0f633a0223d9a1dcccfcf38a64c9de0874dfcbfac0c6941ccf074d63a2ce0e1e",
 			"license": "MIT",
@@ -407,19 +353,11 @@
 			]
 		},
 		"contracts/EscrowChannel.sol": {
-			"keccak256": "0x4bb371f407fbe602737b4a27bf1dbcb04fe0f412335da9fd5c6596726cd910a5",
+			"keccak256": "0x55b163f389d048b012b1b75317b24ac1797715759c806a226083f2387efedc88",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://21e1ff7414d44294fd36012581ba0ea0717fabd152414786cdc68a225a220fd7",
-				"dweb:/ipfs/QmXdWtP4xHkuUjZEc93RsrCLngQfL2GskyzCSST4NH6dfn"
-			]
-		},
-		"contracts/TestToken.sol": {
-			"keccak256": "0x5128f590d267ae42e3560e63bd91c04188a46ac101b6db8aaefee748912d7773",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://564bfc0ef8c111681e4013abf16c3d8b4ae5943b1caa270fc9b7b18688e1a405",
-				"dweb:/ipfs/QmSJjVjj1uK6y8b5a7JLLUvAMjLXpwERE3BZX1rdmdVgBv"
+				"bzz-raw://8afa14a01ef719abe2412caab1ceecadabd89b7ab566cea82e9621d518db7587",
+				"dweb:/ipfs/QmbWhZp6wXz63uvHJWavqavDoUvzpo2tdC9j9qGGA2bDKA"
 			]
 		}
 	},
