@@ -6,13 +6,25 @@ module.exports = {
   plugins: ['truffle-plugin-verify'],
   api_keys: {
     etherscan: '2PEHJ498MVXG6B8Z8GVX8MW8CGCIS6H7GI',
+    polygonscan: '2RZ6KG1IX5U5WAQWUI5GIZVH5I32HHJ239',
   },
   networks: {
-    development: {
-      host: '127.0.0.1', // Localhost (default: none)
-      port: 8545, // Standard Ethereum port (default: none)
-      network_id: '*', // Any network (default: none)
+    mumbai: {
+      provider: () =>
+        new HDWalletProvider(
+          MNEMONIC,
+          'wss://polygon-mumbai.g.alchemy.com/v2/n62Uu2zhK2sgKCsjJzHHa6_yzzRmdQie'
+        ),
+      network_id: 80001,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true,
     },
+    // development: {
+    //   host: '127.0.0.1', // Localhost (default: none)
+    //   port: 8545, // Standard Ethereum port (default: none)
+    //   network_id: '*', // Any network (default: none)
+    // },
     rinkeby: {
       provider: function () {
         return new HDWalletProvider(MNEMONIC, API_URL);
@@ -20,6 +32,13 @@ module.exports = {
       network_id: 4,
       gas: 5500000,
     },
+    // matic: {
+    //   provider: function () {
+    //     return new HDWalletProvider(MNEMONIC, API_URL);
+    //   },
+    //   network_id: 80001,
+    // },
+
     // goerli: {
     //   provider: function () {
     //     return new HDWalletProvider(MNEMONIC, API_URL);

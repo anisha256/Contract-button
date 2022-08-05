@@ -1,10 +1,20 @@
-const Escrow = artifacts.require('Escrow');
+const TestToken = artifacts.require('TestToken');
+const CountdownButton = artifacts.require('CountdownButton');
+const currentTime = parseInt(new Date().getTime() / 1000);
 
 module.exports = async function (deployer) {
+  //deploy token
   await deployer.deploy(
-    Escrow,
-    '0x006D6F5912F260383ca1621D0d424Cd0e53824Be',
-    '0x764635f0CAfE21315fd5bdB247965C2e442a3Bb7',
-    '20'
+    TestToken,
+    '0xc30004803f5dc1f6ad15193a197fd1fbd0d471d1'
+  );
+  const token = await TestToken.deployed();
+  //deploy CountdownButton contract
+  await deployer.deploy(
+    CountdownButton,
+    '0xbB729f824D6C8Ca59106dcE008265A74b785aa99',
+    token.address,
+    36000,
+    currentTime
   );
 };
